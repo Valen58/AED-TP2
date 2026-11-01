@@ -1,13 +1,13 @@
 package aed.tp2;
 
 public class NodoABB {
-    private Usuarios usuario;
+    private Usuario usuario;
     private NodoABB izq;
     private NodoABB der;
 
 
     //Constructor
-    public NodoABB(Usuarios usuario){
+    public NodoABB(Usuario usuario){
         
         this.usuario = usuario;
         this.der = null;
@@ -15,11 +15,11 @@ public class NodoABB {
     }
 
     //Getters y Setters
-    public Usuarios obtenerUsuario(){
+    public Usuario obtenerUsuario(){
         return usuario;
     }
 
-    public void setUsuario(Usuarios usuario){
+    public void setUsuario(Usuario usuario){
         this.usuario = usuario;
     }
 

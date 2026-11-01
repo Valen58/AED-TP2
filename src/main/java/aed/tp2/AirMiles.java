@@ -1,7 +1,8 @@
 package aed.tp2;
 
 public class AirMiles implements SistemaAirMiles {
-    /*COMPLETAR*/
+    DiccionarioABB diccionarioABB;
+    Heap maxHeap;
 
     public AirMiles() {
         throw new UnsupportedOperationException("Sin implementar");
@@ -28,7 +29,7 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public double consultarSaldo(int id) {
-        throw new UnsupportedOperationException("Sin implementar");
+        //aguante platense
     }
 
     public String consultarCategoria(int id) {

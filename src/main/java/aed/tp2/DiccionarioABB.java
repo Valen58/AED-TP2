@@ -28,9 +28,25 @@ public class DiccionarioABB {
         return false; //si llego al final (actual = null) y no encontro la clave significa que la clave no esta en el diccionario
     }
 
+    public Usuario obtener(int clave){
+        NodoABB actual = this.raiz;
+
+        while (actual != null){
+            int idActual = actual.obtenerUsuario().obtenerId(); //se obtiene el id del usuario para comparar
+
+            if (clave == idActual){ //si se encontro la id se retorna el usuario entero con todos sus atributos
+                return actual.obtenerUsuario();
+            }else if (clave > idActual){ //si la clave es mayor al id actual se mueve a la derecha donde hay elementos mas grandes
+                actual = actual.obtenerDerecho();
+            }else{ //si la clave es menor al id actual se mueve a la izquierda donde hay elementos mas chicos
+                actual = actual.obtenerIzquierdo();
+            }
+        }
+        return null;
+    }
 
 
-    public void setKey(int clave, Usuarios valor){ //Como el de TADS, si no existe la crea, si no, la modifica
+    public void setKey(int clave, Usuario valor){ //Como el de TADS, si no existe la crea, si no, la modifica
         NodoABB actual = this.raiz;
         NodoABB padre = actual;
         
