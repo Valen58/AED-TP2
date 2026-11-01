@@ -1,6 +1,7 @@
+package aed.tp2;
 import java.util.ArrayList;
 
-public class Heap{
+public class Heap {
     private ArrayList<NodoHeap> heap;
 
     // Constructor del Heap
@@ -8,15 +9,65 @@ public class Heap{
         heap = new ArrayList<NodoHeap>();
     }
 
+    // Handle:
+    private class NodoHeap implements Handle<Usuario>{
+        private Usuario usuario;
+        private int posicion;
+
+        // Constructor de cada nodo para el Heap.
+        public NodoHeap (Usuario us, int pos){ 
+            usuario = us;
+            posicion = pos;
+        }
+
+        // Getter para obtener el usuario.
+        public Usuario valor(){
+            return usuario;
+        }
+
+        public void eliminar(){
+            Heap.this.eliminar(this);
+        }
+
+        public void modificar(Usuario us){
+            this.usuario = us;
+            Heap.this.actualizarHeap(us);
+        }
+
+        public boolean equals(Handle<Usuario> handleUs){
+            boolean res = false;
+            if(handleUs != null){
+                res = this.usuario.equals(handleUs.valor());
+            }
+            return res;
+        }
+
+        // Getter para obtener la posición.
+        public int posicion(){
+            return posicion;
+        }
+
+        // Setter para la posición.
+        /*
+            Este método debe ser llamado unicamente por la clase Heap, no es valido
+            llamarlo desde otro lado porque sino rompe el encapsulamiento.
+                Una solución para hacer esto es definir todo el nodoHeap en Heap y que
+            este método sea privado en dicho archivo.
+        */
+        private void setPosicion(int i){
+            this.posicion = i;
+        }
+    }
+    
     // Operación que me permite agregar usuarios al Heap.
     /* 
         Guardo al usuario en un nodo, lo agrego al final del heap, setteo el 
         nodo en el usuario y después lo acomodo en el Heap a donde corresponda.
     */
     public void agregarNodo(Usuario us){
-        NodoHeap nuevoUs = new NodoHeap(us, heap.size(), this);
+        NodoHeap nuevoUs = new NodoHeap(us, heap.size());
         heap.add(nuevoUs);
-        us.setNodoEnHeap(nuevoUs);
+        us.setHandleEnHeap(nuevoUs);
         siftUp(heap.size() - 1);
     }
 
@@ -38,7 +89,7 @@ public class Heap{
                 siftDown(0);
             }
             Usuario maximo = max.valor();
-            maximo.setNodoEnHeap(null);
+            maximo.setHandleEnHeap(null);
             return maximo;
         } else{
             throw new UnsupportedOperationException("El heap esta vacio");
@@ -65,7 +116,7 @@ public class Heap{
         Antes de llamar a este método, las millas disponibles ya deben estar cambiadas.
     */
     public void actualizarHeap(Usuario us){
-        NodoHeap nodoUs = us.nodoEnHeap(); // getter en usuario para obtener el nodo del Heap del usuario. (el atributo nodoEnHeap)
+        NodoHeap nodoUs = (NodoHeap) us.handleEnHeap(); // getter en usuario para obtener el handle del nodo del Heap del usuario. (el atributo handleEnHeap)
         if (nodoUs != null){
             int posNodoUs = nodoUs.posicion();
             if (posNodoUs > 0 && us.millasDisponibles() > heap.get(indicePadre(posNodoUs)).valor().millasDisponibles()){ // getter en usuario para obtener las millasDisponibles.
@@ -147,7 +198,7 @@ public class Heap{
         }
         heap.remove(ultimaPos);
         nodoAEliminar.setPosicion(-1);
-        nodoAEliminar.valor().setNodoEnHeap(null);
+        nodoAEliminar.valor().setHandleEnHeap(null);
         if (posicion < heap.size()){
             siftUp(posicion);
             siftDown(posicion);
