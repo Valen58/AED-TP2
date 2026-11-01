@@ -13,7 +13,7 @@ public class Usuario {
 
     //Referencias a las estructuras de datos
     private NodoABB nodoEnABB;
-    private NodoHeap nodoEnHeap;
+    private Handle<Usuario> handleEnHeap;
 
 
     public int obtenerId(){
@@ -25,12 +25,12 @@ public class Usuario {
         return millasDisponibles;
     }
 
-    public NodoHeap nodoEnHeap(){
-        return nodoEnHeap;
+    public Handle<Usuario> handleEnHeap(){
+        return handleEnHeap;
     }
 
-    public void setNodoEnHeap(NodoHeap nuevoNodo){
-        this.nodoEnHeap = nuevoNodo;
+    public void setHandleEnHeap(Handle<Usuario> nuevoNodo){
+        this.handleEnHeap = nuevoNodo;
     }
 
     @Override
