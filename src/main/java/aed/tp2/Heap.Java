@@ -58,7 +58,7 @@ public class Heap {
             this.posicion = i;
         }
     }
-    
+
     // Operación que me permite agregar usuarios al Heap.
     /* 
         Guardo al usuario en un nodo, lo agrego al final del heap, setteo el 
@@ -189,19 +189,23 @@ public class Heap {
         la posición del nodo a eliminar sea menor a la longitud del Heap (esto significa que el nodo a eliminar no sea el último) lo acomodamos hacia arriba o hacia abajo.
     */
     public void eliminar(NodoHeap nodoAEliminar){
-        int posicion = nodoAEliminar.posicion();
-        int ultimaPos = heap.size() - 1;
-        if (posicion != ultimaPos){
-            NodoHeap ultimoNodo = heap.get(ultimaPos);
-            heap.set(posicion, ultimoNodo);
-            ultimoNodo.setPosicion(posicion);
-        }
-        heap.remove(ultimaPos);
-        nodoAEliminar.setPosicion(-1);
-        nodoAEliminar.valor().setHandleEnHeap(null);
-        if (posicion < heap.size()){
-            siftUp(posicion);
-            siftDown(posicion);
+        if (nodoAEliminar != null){
+            int posicion = nodoAEliminar.posicion();
+            int ultimaPos = heap.size() - 1;
+            if (posicion != ultimaPos){
+                NodoHeap ultimoNodo = heap.get(ultimaPos);
+                heap.set(posicion, ultimoNodo);
+                ultimoNodo.setPosicion(posicion);
+            }
+            heap.remove(ultimaPos);
+            nodoAEliminar.setPosicion(-1);
+            nodoAEliminar.valor().setHandleEnHeap(null);
+            if (posicion < heap.size()){
+                siftUp(posicion);
+                siftDown(posicion);
+            }
+        } else{
+            throw new UnsupportedOperationException("No se puede eliminar un nodo vacio");
         }
     }
 
