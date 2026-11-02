@@ -8,7 +8,6 @@ public class NodoABB {
 
     //Constructor
     public NodoABB(Usuario usuario){
-        
         this.usuario = usuario;
         this.der = null;
         this.izq = null;

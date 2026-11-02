@@ -67,7 +67,7 @@ public class Heap {
     public void agregarNodo(Usuario us){
         NodoHeap nuevoUs = new NodoHeap(us, heap.size());
         heap.add(nuevoUs);
-        us.setHandleEnHeap(nuevoUs);
+        us.setHandleEnHeap(nuevoUs); // Esta linea hace que se actualice el puntero en el usuario.
         siftUp(heap.size() - 1);
     }
 
