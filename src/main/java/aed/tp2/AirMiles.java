@@ -59,8 +59,23 @@ public class AirMiles implements SistemaAirMiles {
         }
     }
 
+    //  <<NO ESTA TERMINADA>> al no estar implementado el trie de promos, voy a suponer los nombres de las operaciones y despues cuando este hecho lo hago bien pero asi queda la estructura por lo menos
     public void acumularMillas(int id, double distancia, String nombrePromo) {
-        throw new UnsupportedOperationException("Sin implementar");
+        //double factorPromo = promociones.obtenerFactor(nombrePromo); NO ESTA IMPLEMENTADO EL TRIE 
+        double factorPromo = 1.0; //valor provisorio hasta tener el trie hecho
+       
+        Usuario viajero = usuarios.obtener(id);
+        double categoriaViajero = viajero.factorCategoria();
+        double formulaMillas = distancia * categoriaViajero * factorPromo;
+            
+        viajero.sumarMillas(formulaMillas);
+        maxHeap.actualizarHeap(viajero);
+
+        if (elMasAcumulador == null || elMasAcumulador.millasTotales() < viajero.millasTotales()){
+            elMasAcumulador = viajero;
+        }
+    
+
     }
 
     public void canjearMillas(int id, double cantidad) {
@@ -90,7 +105,26 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public int[] rankingMillas(int n) {
-        throw new UnsupportedOperationException("Sin implementar");
+        int[] res = new int[n];
+        Usuario[] sacados = new Usuario[n]; //yo lo cambiaria por arrayList, pero no se si se puede usar en el tp sin que lo implementemos nosotros
+        int i = 0;
+        int j = 0;
+        while (i < n){
+            Usuario maxActual = maxHeap.extraerMaximo(); //es maxActual porque cada vez que saco el maximo se reordena el heap y vuelve a tener un maximo
+            res[i] = maxActual.obtenerId(); //obtengo la id del usuario maximo del heap
+            sacados[i] = maxActual;
+
+            i++;
+        } //O(Nlog(u))
+
+        //recompongo todo el heap que le habia sacado los n elementos maximos para meter en res --- O(Nlog(u))
+        while (j < n){
+            maxHeap.agregarNodo(sacados[j]);
+            
+            j++;
+        }
+        
+        return res; //O(Nlog(u) + O(Nlog(u)) = Nlog(u))
     }
 
     public void iniciarPromocion(String nombre, double factor) {
