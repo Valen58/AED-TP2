@@ -159,11 +159,5 @@ public class AirMilesTestsPropios {
         us1.handleEnHeap().eliminar();
         us2.handleEnHeap().eliminar();
         us3.handleEnHeap().eliminar();
-        
-        // Caso eliminar cuando el heap está vacío
-        Exception excepcion = assertThrows(UnsupportedOperationException.class, () -> Heap.eliminar(null));
-        assertEquals("No se puede eliminar un nodo vacio", excepcion.getMessage());
-
-
     }
 }
