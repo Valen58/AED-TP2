@@ -53,6 +53,12 @@ public class Usuario {
         return categoriaCalculada;
     }
 
+        public void sumarMillas(double millas){
+        if (millas > 0){
+            this.millasDisponibles += millas;
+            this.millasTotales += millas;
+        }
+    }
 
     public int obtenerId(){
         return this.id;

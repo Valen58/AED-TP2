@@ -6,8 +6,12 @@ public class AirMiles implements SistemaAirMiles {
     Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene.
     Usuario elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
 
-    public AirMiles() {
-        throw new UnsupportedOperationException("Sin implementar");
+    public AirMiles() { //este seria el crearSistema() osea el constructor 
+        this.usuarios = new DiccionarioABB();
+        this.maxHeap = new Heap();
+
+        this.elMasAcumulador = null;
+        this.elMasCanjeador = null;
     }
     
     public void registrarUsuario(int id) {
@@ -25,7 +29,34 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void registrarUsuarioConReferidor(int id, int ref) {
-        throw new UnsupportedOperationException("Sin implementar");
+        Usuario referidor = usuarios.obtener(ref);
+        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null, null);
+        
+
+        if (referidor != null){
+            referidor.sumarMillas(500); //metodo dentro de Usuario
+            maxHeap.actualizarHeap(referidor);
+
+            //¿por que lo meto aca este if? porque si lo dejo afuera puede pasar que el referidor sea null (muy raro, no deberia pasar) y que me tire error de nullPointerException
+            if (elMasAcumulador == null || referidor.millasDisponibles() > elMasAcumulador.millasDisponibles()){ //segun el enunciado el masAcumulador es sobre las millas disponibles y nos las totales
+                elMasAcumulador = referidor;
+        }
+        }
+        
+        if (usuarios.pertenece(id)){
+            throw new UnsupportedOperationException("El usuario ya existe");
+        }else{
+            usuarios.setKey(id, nuevoUsuario);
+            maxHeap.agregarNodo(nuevoUsuario);
+        }
+
+        //casos super borde por si el referidor no existe y no hay masAcumulador ni masCanjeador para ese momento
+        if(elMasAcumulador == null){
+            elMasAcumulador = nuevoUsuario;
+        }
+        if (elMasCanjeador == null){
+            elMasCanjeador = nuevoUsuario;
+        }
     }
 
     public void acumularMillas(int id, double distancia, String nombrePromo) {
