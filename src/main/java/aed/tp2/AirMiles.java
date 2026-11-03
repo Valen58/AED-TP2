@@ -5,10 +5,12 @@ public class AirMiles implements SistemaAirMiles {
     Heap maxHeap; // El heap respecto a las millas disponibles.
     Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene.
     Usuario elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
+    private Trie<Promocion> promociones; // Guardamos las promociones con sus respectivos factores y topes
 
     public AirMiles() { //este seria el crearSistema() osea el constructor 
         this.usuarios = new DiccionarioABB();
         this.maxHeap = new Heap();
+        this.promociones = new Trie<>();
 
         this.elMasAcumulador = null;
         this.elMasCanjeador = null;
@@ -128,15 +130,17 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void iniciarPromocion(String nombre, double factor) {
-        throw new UnsupportedOperationException("Sin implementar");
+        Promocion p = new Promocion(factor);
+        promociones.insertar(nombre, p);
     }
 
     public void iniciarPromocionConTope(String nombre, double factor, double tope) {
-        throw new UnsupportedOperationException("Sin implementar");
+        Promocion p = new Promocion(factor, tope);
+        promociones.insertar(nombre, p);
     }
 
     public void finalizarPromocion(String nombre) {
-        throw new UnsupportedOperationException("Sin implementar");
+        promociones.eliminar(nombre);
     }
 
     public int elMasAcumulador() {
