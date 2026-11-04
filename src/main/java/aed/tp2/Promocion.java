@@ -28,7 +28,7 @@ public class Promocion {
         return tope;
     }
 
-    public int getMillasOtorgadas(){
+    public int getMillasOtorgadas(){ 
         return millasOtorgadas;
     }
 

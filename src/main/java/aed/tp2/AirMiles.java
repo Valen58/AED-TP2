@@ -5,7 +5,7 @@ public class AirMiles implements SistemaAirMiles {
     Heap maxHeap; // El heap respecto a las millas disponibles.
     Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene.
     Usuario elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
-    private Trie<Promocion> promociones; // Guardamos las promociones con sus respectivos factores y topes
+    Trie<Promocion> promociones; // Guardamos las promociones con sus respectivos factores y topes
 
     public AirMiles() { //este seria el crearSistema() osea el constructor 
         this.usuarios = new DiccionarioABB();
@@ -61,15 +61,26 @@ public class AirMiles implements SistemaAirMiles {
         }
     }
 
-    //  <<NO ESTA TERMINADA>> al no estar implementado el trie de promos, voy a suponer los nombres de las operaciones y despues cuando este hecho lo hago bien pero asi queda la estructura por lo menos
+    
     public void acumularMillas(int id, double distancia, String nombrePromo) {
-        //double factorPromo = promociones.obtenerFactor(nombrePromo); NO ESTA IMPLEMENTADO EL TRIE 
-        double factorPromo = 1.0; //valor provisorio hasta tener el trie hecho
+        Promocion promo = promociones.buscar(nombrePromo);
+        double factorPromo = 1.0;
+        if (promo != null && promo.estaActiva()){ // aca chequeo si la promo no se paso del tope si es que tiene
+            factorPromo = promo.getFactor();
+        }
        
         Usuario viajero = usuarios.obtener(id);
         double categoriaViajero = viajero.factorCategoria();
         double formulaMillas = distancia * categoriaViajero * factorPromo;
             
+        if (promo != null && promo.estaActiva()){
+            int acumuladas = promo.getMillasOtorgadas();
+            acumuladas += (int) formulaMillas;
+            promo.setMillasOtorgadas(acumuladas);
+            
+        }
+
+
         viajero.sumarMillas(formulaMillas);
         maxHeap.actualizarHeap(viajero);
 
