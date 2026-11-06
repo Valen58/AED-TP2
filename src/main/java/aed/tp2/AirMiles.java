@@ -155,7 +155,10 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public int elMasAcumulador() {
-        throw new UnsupportedOperationException("Sin implementar");
+        if (elMasAcumulador == null){
+            return -1;
+        }
+        return elMasAcumulador.obtenerId();
     }
 
     public int elMasCanjeador() {
