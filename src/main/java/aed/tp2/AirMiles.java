@@ -4,13 +4,15 @@ public class AirMiles implements SistemaAirMiles {
     DiccionarioABB usuarios; // El ABB de los usuarios.
     Heap maxHeap; // El heap respecto a las millas disponibles.
     Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene.
-    Usuario elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
+    RegistroActividad elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
+    ABBPorId<RegistroActividad> actividadPorUsuario;
     Trie<Promocion> promociones; // Guardamos las promociones con sus respectivos factores y topes
 
     public AirMiles() { //este seria el crearSistema() osea el constructor 
         this.usuarios = new DiccionarioABB();
         this.maxHeap = new Heap();
         this.promociones = new Trie<>();
+        this.actividadPorUsuario = new ABBPorId<>();
 
         this.elMasAcumulador = null;
         this.elMasCanjeador = null;
@@ -37,10 +39,11 @@ public class AirMiles implements SistemaAirMiles {
 
         if (referidor != null){
             referidor.sumarMillas(500); //metodo dentro de Usuario
+            nuevoUsuario.sumarMillas(500);
             maxHeap.actualizarHeap(referidor);
 
             //¿por que lo meto aca este if? porque si lo dejo afuera puede pasar que el referidor sea null (muy raro, no deberia pasar) y que me tire error de nullPointerException
-            if (elMasAcumulador == null || referidor.millasDisponibles() > elMasAcumulador.millasDisponibles()){ //segun el enunciado el masAcumulador es sobre las millas disponibles y nos las totales
+            if (elMasAcumulador == null || referidor.millasTotales() > elMasAcumulador.millasTotales()){ //segun el enunciado el masAcumulador es sobre las millas disponibles y nos las totales
                 elMasAcumulador = referidor;
         }
         }
@@ -55,9 +58,6 @@ public class AirMiles implements SistemaAirMiles {
         //casos super borde por si el referidor no existe y no hay masAcumulador ni masCanjeador para ese momento
         if(elMasAcumulador == null){
             elMasAcumulador = nuevoUsuario;
-        }
-        if (elMasCanjeador == null){
-            elMasCanjeador = nuevoUsuario;
         }
     }
 
@@ -191,6 +191,18 @@ public class AirMiles implements SistemaAirMiles {
         }
 
         return paresExclusivos;
+    }
+
+    private boolean esElDeIdMasChicoDeUnParExclusivo(RegistroActividad registro){
+        boolean esParExclusivo = false;
+        RegistroActividad contraparte = registro.obtenerContraparte();
+
+        if (contraparte != null && !registro.transfirioConVariosUsuarios() && !contraparte.transfirioConVariosUsuarios()){
+            boolean laContraparteLoTieneComoContraparte = contraparte.obtenerContraparte() == registro;
+            esParExclusivo = laContraparteLoTieneComoContraparte && registro.obtenerId() < contraparte.obtenerId();
+        }
+
+        return esParExclusivo;
     }
 
     // Metodos aux
