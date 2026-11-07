@@ -162,10 +162,81 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public int elMasCanjeador() {
-        throw new UnsupportedOperationException("Sin implementar");
-    }
+        if (elMasCanjeador == null){
+            return -1;
+        }
+        return elMasCanjeador.obtenerId();
+    } 
 
     public int[][] paresTransferidoresExclusivos() {
-        throw new UnsupportedOperationException("Sin implementar");
+        RegistroActividad[] registrosOrdenadosPorId = new RegistroActividad[actividadPorUsuario.cantidad()];
+        actividadPorUsuario.guardarValoresEnOrden(registrosOrdenadosPorId); // O(U)
+
+        int cantidadDePares = 0; // Contamos los pares para saber de que tamaño crear el array. O(U)
+        for (int i = 0; i < registrosOrdenadosPorId.length; i++){
+            if (esElDeIdMasChicoDeUnParExclusivo(registrosOrdenadosPorId[i])){
+                cantidadDePares++;
+            }
+        }
+
+        int[][] paresExclusivos = new int[cantidadDePares][2];
+        int posicionDelProximoPar = 0; // Guardamos cada par en el array de salida. O(U)
+        for (int i = 0; i < registrosOrdenadosPorId.length; i++){
+            RegistroActividad registro = registrosOrdenadosPorId[i];
+            if (esElDeIdMasChicoDeUnParExclusivo(registro)){
+                paresExclusivos[posicionDelProximoPar][0] = registro.obtenerId();
+                paresExclusivos[posicionDelProximoPar][1] = registro.obtenerContraparte().obtenerId();
+                posicionDelProximoPar++;
+            }
+        }
+
+        return paresExclusivos;
+    }
+
+    // Metodos aux
+
+    // Se llama cada vez que a un usuario le aumentan las millas totales. Como las millas totales nunca bajan, alcanza con comparar al usuario que acaba de cambiar contra el maximo actual, si lo supera pasa a ser el nuevo maximo y si no, el maximo sigue siendo el de antes. 
+    // Complejidad: O(1).
+    public void actualizarElMasAcumulador(Usuario usuario){
+        if (usuario != null && (elMasAcumulador == null || usuario.millasTotales() > elMasAcumulador.millasTotales())){
+            elMasAcumulador = usuario;
+        }
+    }
+
+    // Devuelve el registro de actividad del usuario, y si todavia no tenia lo crea. 
+    // Es una busqueda en el ABB "actividadPorUsuario": O(log U) en promedio y O(U) en el peor caso.
+    
+    private RegistroActividad registroDelUsuario(int idUsuario){
+        RegistroActividad registro = actividadPorUsuario.obtener(idUsuario);
+        if (registro == null){
+            registro = new RegistroActividad(idUsuario);
+            actividadPorUsuario.agregar(idUsuario, registro);
+        }
+        return registro;
+    }
+
+    // Se llama cada vez que un usuario gasta milla, suma lo gastado en su registro y, si supera al maximo actual, pasa a ser el nuevo elMasCanjeador. Como las gastadas nunca bajan, una sola comparacion alcanza. Se pide que lo gastado sea > 0 para que alguien que no gasto nada nunca quede como maximo.
+    // Complejidad: O(log U) promedio y O(U) peor caso por la busqueda del registro, que entra en la complejidad de canjearMillas y transferirMillas. La comparacion en si es O(1).
+    
+    public void registrarGasto(Usuario usuario, double millasGastadas){
+        if (usuario != null && millasGastadas > 0){
+            RegistroActividad registro = registroDelUsuario(usuario.obtenerId());
+            registro.sumarMillasGastadas(millasGastadas);
+            if (elMasCanjeador == null || registro.obtenerMillasGastadas() > elMasCanjeador.obtenerMillasGastadas()){
+                elMasCanjeador = registro;
+            }
+        }
+    }
+
+    // Se llama cada vez que se concreta una transferencia. Deja anotado en los dos usuarios
+    // Complejidad: dos busquedas en el ABB "actividadPorUsuario" (O(log U) promedio, O(U) peor caso) y el resto O(1)
+    
+    public void registrarTransferenciaEntre(Usuario origen, Usuario destino){
+        if (origen != null && destino != null){
+            RegistroActividad registroDelOrigen = registroDelUsuario(origen.obtenerId());
+            RegistroActividad registroDelDestino = registroDelUsuario(destino.obtenerId());
+            registroDelOrigen.registrarTransferenciaCon(registroDelDestino);
+            registroDelDestino.registrarTransferenciaCon(registroDelOrigen);
+        }
     }
 }
