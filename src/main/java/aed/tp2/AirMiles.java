@@ -92,7 +92,17 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void canjearMillas(int id, double cantidad) {
-        throw new UnsupportedOperationException("Sin implementar");
+        Usuario usuarioID = usuarios.obtener(id); // Obtenemos el usuario respecto del ID
+        if (usuarioID == null){ // Si el usuario no existe, lanzamos un error
+            throw new UnsupportedOperationException("El usuario que se intentó canjear no existe.");
+        }
+        if (cantidad > usuarioID.millasDisponibles()){ // Si no tiene millas suficientes, lanzamos un error
+            throw new UnsupportedOperationException("El usuario no tiene millas disponibles suficientes para canjear.");
+        }
+
+        usuarioID.restarMillas(cantidad); // Se descuentan de las disponibles, las totales no se tocan
+        maxHeap.actualizarHeap(usuarioID); // Como bajó su saldo, se reacomoda en el heap
+        registrarGasto(usuarioID, cantidad); // Suma las millas gastadas y, de ser necesario, actualiza elMasCanjeador
     }
 
     public void transferirMillas(int origen, int destino, double cantidad) {
