@@ -145,11 +145,12 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public int[] rankingMillas(int n) {
-        int[] res = new int[n];
-        Usuario[] sacados = new Usuario[n]; //yo lo cambiaria por arrayList, pero no se si se puede usar en el tp sin que lo implementemos nosotros
+        int cantidad = Math.min(n, maxHeap.cantidad());
+        int[] res = new int[cantidad];
+        Usuario[] sacados = new Usuario[cantidad]; //yo lo cambiaria por arrayList, pero no se si se puede usar en el tp sin que lo implementemos nosotros
         int i = 0;
         int j = 0;
-        while (i < n){
+        while (i < cantidad){
             Usuario maxActual = maxHeap.extraerMaximo(); //es maxActual porque cada vez que saco el maximo se reordena el heap y vuelve a tener un maximo
             res[i] = maxActual.obtenerId(); //obtengo la id del usuario maximo del heap
             sacados[i] = maxActual;
@@ -158,7 +159,7 @@ public class AirMiles implements SistemaAirMiles {
         } //O(Nlog(u))
 
         //recompongo todo el heap que le habia sacado los n elementos maximos para meter en res --- O(Nlog(u))
-        while (j < n){
+        while (j < cantidad){
             maxHeap.agregarNodo(sacados[j]);
             
             j++;
