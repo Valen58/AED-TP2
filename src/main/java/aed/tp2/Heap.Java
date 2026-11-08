@@ -14,13 +14,13 @@ public class Heap {
         private Usuario usuario;
         private int posicion;
 
-        // Constructor de cada nodo para el Heap.
+        // Constructor de cada nodo para el Heap
         public NodoHeap (Usuario us, int pos){ 
             usuario = us;
             posicion = pos;
         }
 
-        // Getter para obtener el usuario.
+        // Getter para obtener el usuario
         public Usuario valor(){
             return usuario;
         }
@@ -42,12 +42,17 @@ public class Heap {
             return res;
         }
 
-        // Getter para obtener la posición.
+        // Operación que me permite saber cuántos usuarios hay en el Heap
+        public int cantidad(){
+            return heap.size();
+        }   
+
+        // Getter para obtener la posición
         public int posicion(){
             return posicion;
         }
 
-        // Setter para la posición.
+        // Setter para la posición
         /*
             Este método debe ser llamado unicamente por la clase Heap, no es valido
             llamarlo desde otro lado porque sino rompe el encapsulamiento.
@@ -59,7 +64,7 @@ public class Heap {
         }
     }
     
-    // Operación que me permite agregar usuarios al Heap.
+    // Operación que me permite agregar usuarios al Heap
     /* 
         Guardo al usuario en un nodo, lo agrego al final del heap, setteo el 
         nodo en el usuario y después lo acomodo en el Heap a donde corresponda.
@@ -67,11 +72,11 @@ public class Heap {
     public void agregarNodo(Usuario us){
         NodoHeap nuevoUs = new NodoHeap(us, heap.size());
         heap.add(nuevoUs);
-        us.setHandleEnHeap(nuevoUs); // Esta linea hace que se actualice el puntero en el usuario.
+        us.setHandleEnHeap(nuevoUs); // Esta linea hace que se actualice el puntero en el usuario
         siftUp(heap.size() - 1);
     }
 
-    // Operación que me permite sacar la raíz del Heap.
+    // Operación que me permite sacar la raíz del Heap
     /*
         Si el Heap tiene nodos, saco el primero y el último lo defino como raíz (1° pos. del Heap).
         Después le setteo su nueva posición y lo elimino de su posición anterior. Si me quedan
@@ -96,7 +101,7 @@ public class Heap {
         }
     }
     
-    // Operación que me permite saber quien tiene mas millas disponibles.
+    // Operación que me permite saber quien tiene mas millas disponibles
     /*
         Si tengo algún nodo, devuelvo el usuario que guarda. Sino, no puedo ver ningún usuario.
     */
@@ -107,8 +112,13 @@ public class Heap {
             throw new UnsupportedOperationException("El heap esta vacio");
         }
     }
-    
-    // Operación que me permite actualizar la posición cuando se agrega un nuevo usuario.
+
+    // Operación que me permite saber cuántos usuarios hay en el Heap
+    public int cantidad(){
+        return heap.size();
+    }
+
+    // Operación que me permite actualizar la posición cuando se agrega un nuevo usuario
     /* 
         Obtengo el nodo del usuario ingresado y si existe, pido su posición en el Heap y si sus millas
         disponibles son mayores a las del padre entonces los acomodo, sino lo acomodo con sus hijos.
@@ -119,7 +129,7 @@ public class Heap {
         NodoHeap nodoUs = (NodoHeap) us.handleEnHeap(); // getter en usuario para obtener el handle del nodo del Heap del usuario. (el atributo handleEnHeap)
         if (nodoUs != null){
             int posNodoUs = nodoUs.posicion();
-            if (posNodoUs > 0 && us.millasDisponibles() > heap.get(indicePadre(posNodoUs)).valor().millasDisponibles()){ // getter en usuario para obtener las millasDisponibles.
+            if (posNodoUs > 0 && us.millasDisponibles() > heap.get(indicePadre(posNodoUs)).valor().millasDisponibles()){ // getter en usuario para obtener las millasDisponibles
                 siftUp(posNodoUs);
             } else {
                 siftDown(posNodoUs);
@@ -127,7 +137,7 @@ public class Heap {
         }
     }
 
-    // Operación que intercambia la posición entre nodos.
+    // Operación que intercambia la posición entre nodos
     /*
         Obtengo los nodos cuyas posiciones me pasan por parámetro y las invierto en el Heap. Después,
         cambio su posición en el atributo de cada nodo. Es importante cambiarlo en el Heap y en el
@@ -142,7 +152,7 @@ public class Heap {
         nodoK.setPosicion(j);
     }
 
-    // Operación que intercambia posiciones hacia arriba para ordenar el Heap.
+    // Operación que intercambia posiciones hacia arriba para ordenar el Heap
     /*
         Copio el valor del parámetro, para no editarlo, y mientras el usuario en el nodo actual tenga mas millas que su padre los intercambio
         de lugar. Para no caer en un loop infinito, actualizo la posición del nodo actual con la de su padre. Este ciclo continua hasta que
@@ -159,7 +169,7 @@ public class Heap {
         }
     }
 
-    // Operación que intercambia posiciones hacia abajo para ordenar el Heap.
+    // Operación que intercambia posiciones hacia abajo para ordenar el Heap
     /*
         Copio el valor del parámetro, para no editarlo, y calculo el indice del mayor hijo. Luego, mientras el mayor hizo sea
         distinto de -1 (todos los indices son mayores o iguales a cero porque estamos en un ArrayList entonces -1 es un valor
@@ -180,7 +190,7 @@ public class Heap {
         }
     }
 
-    // Operación para eliminar un nodo cualquiera.
+    // Operación para eliminar un nodo cualquiera
     /*
         Definimos la posición del nodo a eliminar y buscamos el último nodo del Heap. Luego si el nodo a eliminar no es el último,
         colocamos en su posición al último nodo y actualizamos también su atributo posición. En cualquier caso, eliminamos la última
@@ -189,42 +199,38 @@ public class Heap {
         la posición del nodo a eliminar sea menor a la longitud del Heap (esto significa que el nodo a eliminar no sea el último) lo acomodamos hacia arriba o hacia abajo.
     */
     public void eliminar(NodoHeap nodoAEliminar){
-        if (nodoAEliminar != null){
-            int posicion = nodoAEliminar.posicion();
-            int ultimaPos = heap.size() - 1;
-            if (posicion != ultimaPos){
-                NodoHeap ultimoNodo = heap.get(ultimaPos);
-                heap.set(posicion, ultimoNodo);
-                ultimoNodo.setPosicion(posicion);
-            }
-            heap.remove(ultimaPos);
-            nodoAEliminar.setPosicion(-1);
-            nodoAEliminar.valor().setHandleEnHeap(null);
-            if (posicion < heap.size()){
-                siftUp(posicion);
-                siftDown(posicion);
-            }
-        } else{
-            throw new UnsupportedOperationException("No se puede eliminar un nodo vacio");
+        int posicion = nodoAEliminar.posicion();
+        int ultimaPos = heap.size() - 1;
+        if (posicion != ultimaPos){
+            NodoHeap ultimoNodo = heap.get(ultimaPos);
+            heap.set(posicion, ultimoNodo);
+            ultimoNodo.setPosicion(posicion);
+        }
+        heap.remove(ultimaPos);
+        nodoAEliminar.setPosicion(-1);
+        nodoAEliminar.valor().setHandleEnHeap(null);
+        if (posicion < heap.size()){
+            siftUp(posicion);
+            siftDown(posicion);
         }
     }
 
-    // Calcula el indice del padre del nodo actual.
+    // Calcula el indice del padre del nodo actual
     private int indicePadre(int i){ 
         return (i - 1) / 2;
     }
     
-    // Calcula el indice del hijo derecho del nodo actual.
+    // Calcula el indice del hijo derecho del nodo actual
     private int indiceHijoDer(int i){
         return 2 * i + 2;
     }
     
-    // Calcula el indice del hijo izquierdo del nodo actual.
+    // Calcula el indice del hijo izquierdo del nodo actual
     private int indiceHijoIzq(int i){
         return 2 * i + 1;
     }
     
-    // Verifica si hay un hijo derecho.
+    // Verifica si hay un hijo derecho
     boolean hayHijoDer(int i){
         return indiceHijoDer(i) < heap.size();
     }
@@ -234,7 +240,7 @@ public class Heap {
         return indiceHijoIzq(i) < heap.size();
     }
     
-    // Devuelve el indice del hijo con mayor cantidad de millas.
+    // Devuelve el indice del hijo con mayor cantidad de millas
     /*
         En el caso de que no tengamos hijos devolvemos el valor -1,
         como ningún nodo va a estar en la posición -1, porque los
