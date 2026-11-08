@@ -1,10 +1,10 @@
 package aed.tp2;
 
 public class AirMiles implements SistemaAirMiles {
-    DiccionarioABB usuarios; // El ABB de los usuarios.
-    Heap maxHeap; // El heap respecto a las millas disponibles.
-    Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene.
-    RegistroActividad elMasCanjeador; // Guardamos el usuario que mas millas totales gastó.
+    DiccionarioABB usuarios; // El ABB de los usuarios
+    Heap maxHeap; // El heap respecto a las millas disponibles
+    Usuario elMasAcumulador; // Guardamos el usuario que mas millas totales tiene
+    RegistroActividad elMasCanjeador; // Guardamos el usuario que mas millas totales gastó
     ABBPorId<RegistroActividad> actividadPorUsuario;
     Trie<Promocion> promociones; // Guardamos las promociones con sus respectivos factores y topes
 
@@ -19,14 +19,14 @@ public class AirMiles implements SistemaAirMiles {
     }
     
     public void registrarUsuario(int id) {
-        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null, null); // Definimos un usuario nuevo.
-        if (!usuarios.pertenece(id)){ // Si el usuario no existe, lo agrega en ambas estructuras.
+        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null, null); // Definimos un usuario nuevo
+        if (!usuarios.pertenece(id)){ // Si el usuario no existe, lo agrega en ambas estructuras
             usuarios.setKey(id, nuevoUsuario);
             maxHeap.agregarNodo(nuevoUsuario);
-            if (elMasAcumulador == null){ // En el caso de que sea el primer usuario que se ingresa, se actualiza el que mas millas tiene.
+            if (elMasAcumulador == null){ // En el caso de que sea el primer usuario que se ingresa, se actualiza el que mas millas tiene
                 elMasAcumulador = nuevoUsuario;
             }
-        } else{ // En el caso de que el usuario ya esté registrado, lanzamos un error.
+        } else{ // En el caso de que el usuario ya esté registrado, lanzamos un error
             throw new UnsupportedOperationException("El usuario que se quiere ingresar ya existe en el sistema");
         }
 
@@ -106,23 +106,40 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void transferirMillas(int origen, int destino, double cantidad) {
-        throw new UnsupportedOperationException("Sin implementar");
+        Usuario usuarioOrigen = usuarios.obtener(origen); // Obtenemos ambos usuarios respecto de sus ID
+        Usuario usuarioDestino = usuarios.obtener(destino);
+        if (usuarioOrigen == null || usuarioDestino == null){ // Si alguno de los dos no existe, lanzamos un error
+            throw new UnsupportedOperationException("El usuario origen o el usuario destino de la transferencia no existe.");
+        }
+        if (origen == destino){ // No se puede transferir millas a uno mismo
+            throw new UnsupportedOperationException("El usuario origen y el usuario destino de la transferencia son el mismo.");
+        }
+        if (cantidad > usuarioOrigen.millasDisponibles()){ // Si el origen no tiene millas suficientes, lanzamos un error
+            throw new UnsupportedOperationException("El usuario origen no tiene millas disponibles suficientes para transferir.");
+        }
+
+        usuarioOrigen.restarMillas(cantidad); // Al origen se le descuentan de las disponibles, las totales no se tocan
+        usuarioDestino.recibirMillas(cantidad); // El destino las suma solo a las disponibles, no cambia su categoría
+        maxHeap.actualizarHeap(usuarioOrigen); // Como cambio el saldo de ambos, se reacomodan en el heap
+        maxHeap.actualizarHeap(usuarioDestino);
+        registrarGasto(usuarioOrigen, cantidad); // Suma las millas gastadas del origen y, de ser necesario, actualiza elMasCanjeador
+        registrarTransferenciaEntre(usuarioOrigen, usuarioDestino); // Deja anotado en ambos que transfirieron entre si, para los pares exclusivos
     }
 
     public double consultarSaldo(int id) {
-        Usuario usuarioID = usuarios.obtener(id); // Obtenemos el usuario respecto del ID.
-        if (usuarioID != null){ // Si el usuario existe, devolvemos la cantidad de millas disponibles que tiene.
+        Usuario usuarioID = usuarios.obtener(id); // Obtenemos el usuario respecto del ID
+        if (usuarioID != null){ // Si el usuario existe, devolvemos la cantidad de millas disponibles que tiene
             return usuarioID.millasDisponibles();
-        } else{ // En caso de que no exista, lanzamos un error.
+        } else{ // En caso de que no exista, lanzamos un error
             throw new UnsupportedOperationException("El usuario que se intentó consultar no existe.");
         }
     }
     
     public String consultarCategoria(int id) {
         Usuario usuarioID = usuarios.obtener(id); // Obtenemos el usuario respecto del ID
-        if (usuarioID != null){ // Si el usuario existe, calculamos la categoría a la que pertenece.
+        if (usuarioID != null){ // Si el usuario existe, calculamos la categoría a la que pertenece
             return usuarioID.categoria();
-       } else{ // En el caso de que no exista el usuario, lanzamos un error.
+       } else{ // En el caso de que no exista el usuario, lanzamos un error
            throw new UnsupportedOperationException("El usuario que se intentó consultar no existe.");
        }
     }
