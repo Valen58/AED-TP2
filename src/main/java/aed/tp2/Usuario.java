@@ -66,6 +66,12 @@ public class Usuario {
         }
     }
 
+    public void recibirMillas(double millas){
+        if (millas > 0){
+            this.millasDisponibles += millas;
+        }
+    }
+
     public int obtenerId(){
         return this.id;
     }
