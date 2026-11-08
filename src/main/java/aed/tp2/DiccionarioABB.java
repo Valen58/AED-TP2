@@ -2,10 +2,10 @@ package aed.tp2;
 
 public class DiccionarioABB {
     private NodoABB raiz;
-    
+
 
     public DiccionarioABB(){
-        this.raiz = null; // Crea el diccionario vacio
+        this.raiz = null; // arranca vacio
     }
 
 
@@ -13,53 +13,52 @@ public class DiccionarioABB {
         NodoABB actual = this.raiz;
 
         while (actual != null){
-            int idActual = actual.obtenerUsuario().obtenerId(); //accede al usuario del nodo y entra a su id osea la clave del diccionario
-            
-            //Todo este if es como si fuera un compareTo pero me da fiaca implementarlo ademas son tipos primitivos los que comparo asi que no hace falta por ahora :)
+            int idActual = actual.obtenerUsuario().obtenerId(); // la clave es el id del usuario
+
             if (clave == idActual){
                 return true;
-            }else if (clave > idActual){ 
-                actual = actual.obtenerDerecho();   //en el ABB si el valor que buscamos es MAYOR al padre se mueve a la derecha
-            }else{                      
-                actual = actual.obtenerIzquierdo(); //en el ABB si el valor que buscamos es MENOR al padre se mueve a la izquierda
+            }else if (clave > idActual){
+                actual = actual.obtenerDerecho();   // mayor, va a la derecha
+            }else{
+                actual = actual.obtenerIzquierdo(); // menor, va a la izquierda
             }
         }
 
-        return false; //si llego al final (actual = null) y no encontro la clave significa que la clave no esta en el diccionario
+        return false; // llego a null y no estaba
     }
 
     public Usuario obtener(int clave){
         NodoABB actual = this.raiz;
 
         while (actual != null){
-            int idActual = actual.obtenerUsuario().obtenerId(); //se obtiene el id del usuario para comparar
+            int idActual = actual.obtenerUsuario().obtenerId();
 
-            if (clave == idActual){ //si se encontro la id se retorna el usuario entero con todos sus atributos
+            if (clave == idActual){
                 return actual.obtenerUsuario();
-            }else if (clave > idActual){ //si la clave es mayor al id actual se mueve a la derecha donde hay elementos mas grandes
+            }else if (clave > idActual){
                 actual = actual.obtenerDerecho();
-            }else{ //si la clave es menor al id actual se mueve a la izquierda donde hay elementos mas chicos
+            }else{
                 actual = actual.obtenerIzquierdo();
             }
         }
-        return null;
+        return null; // no esta
     }
 
 
-    public void setKey(int clave, Usuario valor){ //Como el de TADS, si no existe la crea, si no, la modifica
+    public void setKey(int clave, Usuario valor){ // si ya existe lo reemplaza, sino lo agrega
         NodoABB actual = this.raiz;
         NodoABB padre = actual;
-        
+
         if (this.raiz == null){
-            this.raiz = new NodoABB(valor); //si el arbol esta vacio, la raiz sera la nueva clave del diccionario. Y directamente salimos del metodo porque no hay nada mas por hacer
+            this.raiz = new NodoABB(valor); // arbol vacio, queda de raiz
             return;
         }
-        
+
         while (actual != null){
-            padre = actual; //Esto es porque actual al final del ciclo seguro termina en null (en el peor caso) y pierdo su puntero entonces guardo el ultimo nodo antes de que se anule actual en otra variable
+            padre = actual; // me guardo el ultimo nodo porque actual termina en null
             int idActual = actual.obtenerUsuario().obtenerId();
 
-            if (clave == idActual){ //Si ya existe la clave entonces solo la modifico no busco nada mas
+            if (clave == idActual){ // ya existia, lo reemplazo
                 actual.setUsuario(valor);
                 return;
             }else if(clave > idActual){
@@ -70,15 +69,14 @@ public class DiccionarioABB {
         }
 
 
-        //en el caso de que actual sea null es porque la clave no esta en el diccionario y hay que engancharle a padre el nuevo nodo con la clave y el valor osea el objeto Usuarios entero
-        NodoABB nuevoNodo = new NodoABB(valor);
+        NodoABB nuevoNodo = new NodoABB(valor); // no estaba, lo cuelgo del padre
 
-        if (clave > padre.obtenerUsuario().obtenerId()){ 
+        if (clave > padre.obtenerUsuario().obtenerId()){
             padre.setDerecho(nuevoNodo);
         }else{
             padre.setIzquierdo(nuevoNodo);
         }
-        
+
 
     }
 

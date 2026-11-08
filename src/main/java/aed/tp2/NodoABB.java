@@ -6,14 +6,12 @@ public class NodoABB {
     private NodoABB der;
 
 
-    //Constructor
     public NodoABB(Usuario usuario){
         this.usuario = usuario;
         this.der = null;
         this.izq = null;
     }
 
-    //Getters y Setters
     public Usuario obtenerUsuario(){
         return usuario;
     }

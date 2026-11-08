@@ -1,20 +1,15 @@
 package aed.tp2;
 
 public class Usuario {
-    //Atributos del usuario
     private int id;
     private double millasDisponibles;
     private double millasTotales;
     private double millasCanjeadas;
     private double millasTransferidas;
-    //Referencias a las estructuras de datos
     private NodoABB nodoEnABB;
-    private Handle<Usuario> handleEnHeap;
+    private Handle<Usuario> handleEnHeap; // lo usa el heap
 
 
-    //private Conjunto transferencias; NO IMPLEMENTADO TODAVIA
-
-    // Constructor
     public Usuario(int id, double millasD, double millasT, double millasC, double millasTrans, NodoABB nodoABB, Handle<Usuario> hEnHeap){
         this.id = id;
         this.millasDisponibles = millasD;
@@ -25,7 +20,7 @@ public class Usuario {
         this.handleEnHeap = hEnHeap;
     }
 
-    public double factorCategoria(){
+    public double factorCategoria(){ // segun las millas totales
         double factor;
         if (millasTotales >= 50000 && millasTotales < 1000000){
             factor = 2.0;
@@ -39,7 +34,7 @@ public class Usuario {
         return factor;
     }
 
-    public String categoria(){
+    public String categoria(){ // segun las millas totales
         String categoriaCalculada;
         if (millasTotales >= 50000 && millasTotales < 1000000){
             categoriaCalculada = "Oro";
@@ -60,6 +55,18 @@ public class Usuario {
         }
     }
 
+    public void restarMillas(double millas){ // solo las disponibles, las totales no
+        if (millas > 0){
+            this.millasDisponibles -= millas;
+        }
+    }
+
+    public void recibirMillas(double millas){ // solo las disponibles, las totales no
+        if (millas > 0){
+            this.millasDisponibles += millas;
+        }
+    }
+
     public int obtenerId(){
         return this.id;
     }
@@ -68,8 +75,7 @@ public class Usuario {
         return millasTotales;
     }
 
-    // Métodos públicos necesarios para Heap:
-    public double millasDisponibles(){
+    public double millasDisponibles(){ // el heap ordena por esto
         return millasDisponibles;
     }
 
@@ -82,7 +88,7 @@ public class Usuario {
     }
 
     @Override
-    public boolean equals(Object otroUsuario){
+    public boolean equals(Object otroUsuario){ // dos usuarios son iguales si tienen el mismo id
         boolean iguales = false;
         if (otroUsuario != null){
             boolean mismaClase = this.getClass() == otroUsuario.getClass();

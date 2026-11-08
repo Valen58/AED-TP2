@@ -1,30 +1,14 @@
 package aed.tp2;
 
-interface Handle<T>{    
-    /**
-     * Devuelve el valor del elemento
-     * 
-     */
-    public T valor();
-    
-    /**
-     * Elimina al elemento de la colección
-     * 
-     */
-    public void eliminar();
+interface Handle<T>{
+    public T valor(); // devuelve el valor del elemento
 
-    /**
-     * Modifica al elemento de la colección y su orden (de ser necesario)
-     * 
-     */
-    public void modificar(T v);
+    public void eliminar(); // lo saca de la coleccion
 
-    /**
-     * Devuelve si el valor que representa el Handle es equivalente al que representa otro.
-     * 
-     */
-    public boolean equals(Handle<T> h);
+    public void modificar(T v); // lo modifica y reacomoda si hace falta
 
-    
+    public boolean equals(Handle<T> h); // si los dos representan el mismo valor
+
+
 
 }
