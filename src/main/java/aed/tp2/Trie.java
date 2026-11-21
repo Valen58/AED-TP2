@@ -8,7 +8,7 @@ public class Trie<T>{
         raiz = new NodoTrie<>();
     }
 
-    private class NodoTrie<V>{
+    private static class NodoTrie<T>{ //le pongo static solo para decirle a java "cada nodo es independiente y no tiene que guardar un puntero oculto al trie que lo creo" es para evitar que tire una warning de the type T is hiding the type T
 
     private NodoTrie<T>[] hijos;
     private T valor;
