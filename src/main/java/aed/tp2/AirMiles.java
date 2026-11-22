@@ -4,25 +4,26 @@ public class AirMiles implements SistemaAirMiles {
     DiccionarioABB<Integer, Usuario> usuarios; // busca usuarios por id
     Heap<Usuario> maxHeap; // ordena por millas disponibles
     Usuario elMasAcumulador; // el de mas millas totales
-    RegistroActividad elMasCanjeador; // el que mas millas gasto
-    ABBPorId<RegistroActividad> actividadPorUsuario; // gastos y transferencias por id
+    Usuario elMasCanjeador; // el que mas millas gasto
     Trie<Promocion> promociones; // promos por nombre
 
     public AirMiles() { // crearSistema
         this.usuarios = new DiccionarioABB<Integer, Usuario>();
         this.maxHeap = new Heap<>(new PorMillasDisp()); 
         this.promociones = new Trie<>();
-        this.actividadPorUsuario = new ABBPorId<>();
 
         this.elMasAcumulador = null;
         this.elMasCanjeador = null;
     }
 
     public void registrarUsuario(int id) {
-        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null);
         if (!usuarios.pertenece(id)){
-            usuarios.setKey(id, nuevoUsuario);
-            maxHeap.agregarNodo(nuevoUsuario);
+            Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null);
+            Handle<Usuario> handleABB = this.usuarios.setKey(id, nuevoUsuario);         
+            Handle<Usuario> handleHeap = this.maxHeap.agregarNodo(nuevoUsuario);
+            //luego de crear el usuario enlazo su handle a la estructura que corresponde
+            nuevoUsuario.setHandleEnABB(handleABB);
+            nuevoUsuario.setHandleEnHeap(handleHeap);
             if (elMasAcumulador == null){ // si es el primero queda como mas acumulador
                 elMasAcumulador = nuevoUsuario;
             }
@@ -33,8 +34,13 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void registrarUsuarioConReferidor(int id, int ref) {
+       
+        if (usuarios.pertenece(id)){
+            throw new UnsupportedOperationException("El usuario ya existe");
+        }
+
         Usuario referidor = usuarios.obtener(ref);
-        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null, null);
+        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null);
 
 
         if (referidor != null){
@@ -47,14 +53,13 @@ public class AirMiles implements SistemaAirMiles {
         }
         }
 
-        if (usuarios.pertenece(id)){ // id repetido
-            throw new UnsupportedOperationException("El usuario ya existe");
-        }else{
-            usuarios.setKey(id, nuevoUsuario);
-            maxHeap.agregarNodo(nuevoUsuario);
-        }
+        Handle<Usuario> handleABB = usuarios.setKey(id, nuevoUsuario);
+        Handle<Usuario> handleHeap = maxHeap.agregarNodo(nuevoUsuario);
+        nuevoUsuario.setHandleEnABB(handleABB);
+        nuevoUsuario.setHandleEnHeap(handleHeap);
 
-        if(elMasAcumulador == null){ // si no habia nadie queda el nuevo
+
+        if(elMasAcumulador == null || nuevoUsuario.millasTotales() > elMasAcumulador.millasTotales()){ // si no habia nadie queda el nuevo
             elMasAcumulador = nuevoUsuario;
         }
     }
