@@ -19,7 +19,7 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public void registrarUsuario(int id) {
-        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null, null);
+        Usuario nuevoUsuario = new Usuario(id, 0, 0, 0, 0, null);
         if (!usuarios.pertenece(id)){
             usuarios.setKey(id, nuevoUsuario);
             maxHeap.agregarNodo(nuevoUsuario);

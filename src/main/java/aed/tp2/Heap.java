@@ -84,7 +84,7 @@ public class Heap<T> {
             T maximo = max.valor();
             max.setPosicion(-1);
             return maximo;
-        } else{ // heap vacio
+        } else{
             throw new UnsupportedOperationException("El heap esta vacio");
         }
     }
