@@ -11,7 +11,7 @@ public class DiccionarioABB<K extends Comparable<K> ,V> { //java no sabe como co
     }
 
 
-    private class NodoABB<K, V> { //al ser de tipo generico, no sirve el metodo obtenerId() ya que la clave podria ser de cualquier tipo, en un diccionario generico se guarda directamente la clave y valor
+    private class NodoABB<K, V> implements Handle<V> { //al ser de tipo generico, no sirve el metodo obtenerId() ya que la clave podria ser de cualquier tipo, en un diccionario generico se guarda directamente la clave y valor
         private K clave;
         private V valor;
         private NodoABB<K, V> izq;
@@ -25,6 +25,32 @@ public class DiccionarioABB<K extends Comparable<K> ,V> { //java no sabe como co
             this.izq = null;
         }
         
+        //metodos del handle para no romper el encapsulamiento
+        @Override 
+        public V valor(){
+            return this.valor;
+        }
+
+        @Override 
+        public void modificar(V nuevoValor){
+            this.valor = nuevoValor;
+        }
+
+        @Override
+        public void eliminar(){
+            //realmente no usamos eliminar, se podria sacar este metodo
+        }
+
+        @Override 
+        public boolean equals(Handle<V> h){
+            if (h == null){
+                return false;
+            }
+            return this.valor.equals(h.valor());
+        }
+
+
+
         public NodoABB<K, V> obtenerIzquierdo(){
             return izq;
         }
@@ -82,11 +108,12 @@ public class DiccionarioABB<K extends Comparable<K> ,V> { //java no sabe como co
     }
 
     //es igual a agregar del abbporid, si existe modifica sino crea
-    public void setKey(K clave, V valor){ //los tipos de dato de entrada deben ser generico, no pueden ser usuario o int    
+    public Handle<V> setKey(K clave, V valor){ //los tipos de dato de entrada deben ser generico, no pueden ser usuario o int    
         if (this.raiz == null){
-            this.raiz = new NodoABB<>(clave, valor); // arbol vacio, queda de raiz
+            NodoABB<K, V> nuevo = new NodoABB<>(clave, valor);
+            this.raiz = nuevo; // arbol vacio, queda de raiz
             this.cantidadDeNodos++;
-            return;
+            return nuevo;
         }
 
         NodoABB<K, V> actual = this.raiz;
@@ -98,7 +125,7 @@ public class DiccionarioABB<K extends Comparable<K> ,V> { //java no sabe como co
 
             if (comparacion == 0){ // ya existia, lo reemplazo
                 actual.valor = valor;
-                return;
+                return actual;
             }else if(comparacion > 0){
                 actual = actual.obtenerDerecho();
             }else{
@@ -115,7 +142,7 @@ public class DiccionarioABB<K extends Comparable<K> ,V> { //java no sabe como co
             padre.setIzquierdo(nuevoNodo);
         }
         this.cantidadDeNodos++;
-
+        return nuevoNodo;
     }
 
     public void guardarValoresEnOrden(V[] arregloDestino){ // ordenados por id, O(U)

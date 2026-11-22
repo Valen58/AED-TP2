@@ -7,6 +7,7 @@ public class Usuario {
     private double millasCanjeadas;
     private double millasTransferidas;
     private Handle<Usuario> handleEnHeap; // lo usa el heap
+    private Handle<Usuario> handleEnABB; //lo usa el DiccionarioABB
 
     //atributos traidos de RegistroActividad
     private double millasGastadas; //millas canjeadas y transferidas
@@ -20,10 +21,20 @@ public class Usuario {
         this.millasCanjeadas = millasC;
         this.millasTransferidas = millasTrans;
         this.handleEnHeap = hEnHeap;
+        this.handleEnABB = null; //arranca en null principalmente para insertar primero el nodoABB del usuario correspondiente en el diccionario y recien ahi se setea su handle, es simplemente por orden de los objetos
 
         this.millasGastadas = millasCanjeadas + millasTransferidas;
         this.primeraContraparte = null;
         this.transfirioConVariosUsuarios = false;
+    }
+
+    //getter y setter del handle en ABB
+    public Handle<Usuario> handleEnABB(){
+        return this.handleEnABB;
+    }
+
+    public void setHandleEnABB(Handle<Usuario> nuevoHandle){
+        this.handleEnABB = nuevoHandle;
     }
 
     public double factorCategoria(){ // segun las millas totales
