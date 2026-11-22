@@ -22,7 +22,6 @@ public class Usuario {
         this.millasTransferidas = millasTrans;
         this.handleEnHeap = hEnHeap;
         this.handleEnABB = null; //arranca en null principalmente para insertar primero el nodoABB del usuario correspondiente en el diccionario y recien ahi se setea su handle, es simplemente por orden de los objetos
-
         this.millasGastadas = millasCanjeadas + millasTransferidas;
         this.primeraContraparte = null;
         this.transfirioConVariosUsuarios = false;

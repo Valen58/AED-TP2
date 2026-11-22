@@ -10,7 +10,7 @@ public class AirMiles implements SistemaAirMiles {
 
     public AirMiles() { // crearSistema
         this.usuarios = new DiccionarioABB<Integer, Usuario>();
-        this.maxHeap = new Heap<Usuario>();
+        this.maxHeap = new Heap<>(new PorMillasDisp()); 
         this.promociones = new Trie<>();
         this.actividadPorUsuario = new ABBPorId<>();
 
@@ -40,7 +40,7 @@ public class AirMiles implements SistemaAirMiles {
         if (referidor != null){
             referidor.sumarMillas(500); // bono para el referidor
             nuevoUsuario.sumarMillas(500); // y para el referido
-            maxHeap.actualizarHeap(referidor);
+            maxHeap.actualizarHeap(referidor.handleEnHeap());
 
             if (elMasAcumulador == null || referidor.millasTotales() > elMasAcumulador.millasTotales()){ // puede pasar a ser el mas acumulador
                 elMasAcumulador = referidor;
@@ -80,7 +80,7 @@ public class AirMiles implements SistemaAirMiles {
 
 
         viajero.sumarMillas(formulaMillas);
-        maxHeap.actualizarHeap(viajero); // reacomodo en el heap
+        maxHeap.actualizarHeap(viajero.handleEnHeap()); // reacomodo en el heap
 
         if (elMasAcumulador == null || elMasAcumulador.millasTotales() < viajero.millasTotales()){ // puede ser el nuevo mas acumulador
             elMasAcumulador = viajero;
@@ -99,7 +99,7 @@ public class AirMiles implements SistemaAirMiles {
         }
 
         usuarioID.restarMillas(cantidad); // las totales no cambian
-        maxHeap.actualizarHeap(usuarioID); // bajo su saldo, lo reacomodo
+        maxHeap.actualizarHeap(usuarioID.handleEnHeap()); // bajo su saldo, lo reacomodo
         registrarGasto(usuarioID, cantidad); // cuenta para el mas canjeador
     }
 
@@ -118,8 +118,8 @@ public class AirMiles implements SistemaAirMiles {
 
         usuarioOrigen.restarMillas(cantidad); // las totales no cambian
         usuarioDestino.recibirMillas(cantidad); // tampoco cambia su categoria
-        maxHeap.actualizarHeap(usuarioOrigen); // cambio el saldo de los dos, los reacomodo
-        maxHeap.actualizarHeap(usuarioDestino);
+        maxHeap.actualizarHeap(usuarioOrigen.handleEnHeap()); // cambio el saldo de los dos, los reacomodo
+        maxHeap.actualizarHeap(usuarioDestino.handleEnHeap());
         registrarGasto(usuarioOrigen, cantidad); // el gasto es del origen
         registrarTransferenciaEntre(usuarioOrigen, usuarioDestino); // para los pares exclusivos
     }

@@ -9,7 +9,7 @@ public class TestsHeap {
 
     @BeforeEach
     void setUp(){
-        heap = new Heap<Usuario>();
+        Heap<Usuario> heap = new Heap<>(new PorMillasDisp());
     }
 
     @Test
@@ -35,12 +35,12 @@ public class TestsHeap {
 
         maximo = heap.extraerMaximo();
         assertEquals(maximo, us2);
-        assertEquals(heap.usConMasMillasDisp(), us1);
+        assertEquals(heap.obtenerRaizHeap(), us1);
     }
 
     @Test
-    void usConMasMillasDisp(){
-        Exception excepcion = assertThrows(UnsupportedOperationException.class, () -> heap.usConMasMillasDisp()); // heap vacio
+    void obtenerRaizHeap(){
+        Exception excepcion = assertThrows(UnsupportedOperationException.class, () -> heap.obtenerRaizHeap()); // heap vacio
         assertEquals("El heap esta vacio", excepcion.getMessage());
 
         Usuario us1 = new Usuario(26, 100, 0, 0, 0, null, null); // caso general
@@ -51,7 +51,7 @@ public class TestsHeap {
         heap.agregarNodo(us2);
         heap.agregarNodo(us3);
 
-        Usuario maximoSinEditarHeap = heap.usConMasMillasDisp();
+        Usuario maximoSinEditarHeap = heap.obtenerRaizHeap();
         assertEquals(maximoSinEditarHeap, us3);
     }
 
@@ -69,7 +69,7 @@ public class TestsHeap {
         heap.agregarNodo(us4);
         heap.agregarNodo(us5);
 
-        Usuario usMax = heap.usConMasMillasDisp();
+        Usuario usMax = heap.obtenerRaizHeap();
         assertEquals(usMax.obtenerId(), us5.obtenerId());
         assertEquals(usMax.millasDisponibles(), us5.millasDisponibles());
 
@@ -101,7 +101,7 @@ public class TestsHeap {
         heap.agregarNodo(us2);
         heap.agregarNodo(us4);
 
-        assertEquals(heap.usConMasMillasDisp(), us5);
+        assertEquals(heap.obtenerRaizHeap(), us5);
 
         assertEquals(heap.extraerMaximo().obtenerId(), 43); // los saco a todos
         assertEquals(heap.extraerMaximo().obtenerId(), 10);
@@ -136,10 +136,10 @@ public class TestsHeap {
         heap.agregarNodo(us5);
 
         us4.handleEnHeap().eliminar(); // la raiz
-        assertEquals(heap.usConMasMillasDisp(), us2);
+        assertEquals(heap.obtenerRaizHeap(), us2);
 
         us5.handleEnHeap().eliminar(); // el ultimo
-        assertEquals(heap.usConMasMillasDisp(), us2); // la raiz no cambia
+        assertEquals(heap.obtenerRaizHeap(), us2); // la raiz no cambia
 
         us1.handleEnHeap().eliminar(); // los saco a todos
         us2.handleEnHeap().eliminar();
