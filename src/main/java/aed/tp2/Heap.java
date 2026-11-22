@@ -1,39 +1,47 @@
 package aed.tp2;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Heap<T> {
-    private ArrayList<NodoHeap<T>> heap;
+    private ArrayList<NodoHeap> heap;
+    private Comparator<T> comparador;
 
-    public Heap(){
-        heap = new ArrayList<NodoHeap<T>>();
+    public Heap(Comparator<T> comparador){
+        this.heap = new ArrayList<NodoHeap>();
+        this.comparador = comparador; // Asumiendo que nunca me pasan un comparador nulo porque entonces dentro del MaxHeap no podría comparar nada.
     }
 
-    private class NodoHeap<V> implements Handle<V>{ // el handle guarda la posicion en el heap
-        private V usuario;
+    private class NodoHeap implements Handle<T>{ // el handle guarda la posicion en el heap
+        private T valor;
         private int posicion;
 
-        public NodoHeap (V us, int pos){
-            usuario = us;
+        public NodoHeap (T val, int pos){
+            valor = val;
             posicion = pos;
         }
 
-        public U valor(){
-            return usuario;
+        public T valor(){
+            return valor;
         }
 
+        /*
+            En el caso de eliminar un nodo que no estaba en el heap (o que ya fue eliminado) podría tirar error.
+            como este método lo estamos implementando unicamente porque está en la interfaz, es decir que no
+            eliminamos nunca un handle, entonces este error no podría suceder.
+        */
         public void eliminar(){
-
+            Heap.this.eliminar(this); // Heap.this hace referencia al heap del nodo, con "this" solo estaría haciendo referencia al nodo.
         }
 
-        public void modificar(V us){
-            this.usuario = us;
-            Heap.this.actualizarHeap(us);
+        public void modificar(T valorActualizado){
+            this.valor = valorActualizado;
+            Heap.this.actualizarHeap(this);
         }
 
-        public boolean equals(Handle<V> handleUs){
+        public boolean equals(Handle<T> handle){
             boolean res = false;
-            if(handleUs != null){
-                res = this.usuario.equals(handleUs.valor());
+            if(handle != null){
+                res = this.valor.equals(handle.valor());
             }
             return res;
         }
@@ -47,32 +55,44 @@ public class Heap<T> {
         }
     }
 
-    public void agregarNodo(Usuario us){
-        NodoHeap<T> nuevoUs = new NodoHeap<T>(us, heap.size());
-        heap.add(nuevoUs); // lo agrego al final
-        us.setHandleEnHeap(nuevoUs); // el usuario se guarda su handle
+
+    /*
+        Método público que a partir de un valor, lo agrega en el heap. Además devuelve el Handle<T>
+        que hace referencia al nuevo nodo.
+    */
+    public Handle<T> agregarNodo(T nuevoValor){
+        NodoHeap nodoNuevoValor = new NodoHeap(nuevoValor, heap.size());
+        heap.add(nodoNuevoValor); // lo agrego al final
         siftUp(heap.size() - 1); // lo subo hasta su lugar
+        return nodoNuevoValor;
     }
 
-    public Usuario extraerMaximo(){
+
+    /*
+        Método público que retira la raíz del Heap, en el caso de que tenga.
+    */
+    public T extraerMaximo(){
         if (heap.size() > 0){
-            NodoHeap<T> max = heap.get(0);
-            NodoHeap<T> ultimo = heap.get(heap.size() - 1);
+            NodoHeap max = heap.get(0);
+            NodoHeap ultimo = heap.get(heap.size() - 1);
             heap.set(0, ultimo); // el ultimo pasa a ser la raiz
             ultimo.setPosicion(0);
             heap.remove(heap.size() - 1);
             if (heap.size() > 0){
                 siftDown(0); // lo bajo hasta su lugar
             }
-            Usuario maximo = max.valor();
-            maximo.setHandleEnHeap(null); // ya no esta en el heap
+            T maximo = max.valor();
+            max.setPosicion(-1);
             return maximo;
         } else{ // heap vacio
             throw new UnsupportedOperationException("El heap esta vacio");
         }
     }
 
-    public Usuario usConMasMillasDisp(){
+    /*
+        Método público que consulta la raíz del Heap, en caso de tenerla.
+    */
+    public T obtenerRaizHeap(){
         if (heap.size() > 0){
             return heap.get(0).valor(); // la raiz es el maximo
         } else {
@@ -80,69 +100,78 @@ public class Heap<T> {
         }
     }
 
-    public int cantidad(){ // cuantos usuarios hay
+    // La cantidad de nodos que hay en el MaxHeap.
+    public int cantidad(){
         return heap.size();
 
     }
 
-    public Handle<T> definirHandle(T valor){
-        
-    }
-
-    public void actualizarHeap(T us){ // se llama despues de cambiar las millas
-        Handle<T> nodoUs = Handle us; // null si no esta en el heap
-        if (nodoUs != null){
-            int posNodoUs = nodoUs.posicion();
-            if (posNodoUs > 0 && us.millasDisponibles() > heap.get(indicePadre(posNodoUs)).valor().millasDisponibles()){ // si supera al padre sube
-                siftUp(posNodoUs);
+    // Se invoca luego de modificar el valor de un nodo, para mantener los invariantes.
+    public void actualizarHeap(Handle<T> valorHandle){
+        if (valorHandle != null){
+            NodoHeap nodoDelHeap = (NodoHeap) valorHandle;
+            int posNodoDelHeap = nodoDelHeap.posicion();
+            if (posNodoDelHeap > 0 && comparador.compare(nodoDelHeap.valor(), heap.get(indicePadre(posNodoDelHeap)).valor()) > 0){ // si supera al padre sube
+                siftUp(posNodoDelHeap);
             } else { // sino baja
-                siftDown(posNodoUs);
+                siftDown(posNodoDelHeap);
             }
         }
     }
 
+    /*
+        Método privado que realiza el intercambio de nodos, para mantener los invariantes.
+    */
     private void swap(int j, int k){
-        NodoHeap<T> nodoJ = heap.get(j);
-        NodoHeap<T> nodoK = heap.get(k);
+        NodoHeap nodoJ = heap.get(j);
+        NodoHeap nodoK = heap.get(k);
         heap.set(j, nodoK);
         heap.set(k, nodoJ);
         nodoJ.setPosicion(k); // hay que actualizar la posicion de los dos handles
         nodoK.setPosicion(j);
     }
 
-    private void siftUp(int i){ // sube mientras sea mayor que el padre
+    private void siftUp(int i){ // "Sube" el nodo mientras no sea la raíz y que sea mayor al padre.
         int k = i;
-        while (k > 0 && heap.get(k).valor().millasDisponibles() > heap.get(indicePadre(k)).valor().millasDisponibles()){
+        while (k > 0 && comparador.compare(heap.get(k).valor(), heap.get(indicePadre(k)).valor()) > 0){
             int p = indicePadre(k);
             swap(k, p);
             k = p;
         }
     }
 
-    private void siftDown(int i){ // baja mientras sea menor que su mayor hijo
+    private void siftDown(int i){ // "Baja" el nodo mientras no sea una hoja y sea menor a su hijo mayor.
         int k = i;
         int m = indiceMayorDeLosHijos(k);
-        while (m != -1 && heap.get(k).valor().millasDisponibles() < heap.get(m).valor().millasDisponibles()){
+        while (m != -1 && comparador.compare(heap.get(k).valor(), heap.get(m).valor()) < 0){
             swap(k, m);
             k = m;
             m = indiceMayorDeLosHijos(k);
         }
     }
 
-    public void eliminar(NodoHeap<T> nodoAEliminar){ // saca un nodo cualquiera
-        int posicion = nodoAEliminar.posicion();
+    /*
+        Método público que elimina un nodo existente, al hacerlo le define una posición invalida.
+        Este método no se utiliza en el sistema general, pero al ser parte de la interfaz de Handle, lo definimos.
+    */
+    public void eliminar(Handle<T> nodoAEliminar){
+        NodoHeap nodoDelHeap = (NodoHeap) nodoAEliminar;
+        int posicion = nodoDelHeap.posicion();
         int ultimaPos = heap.size() - 1;
-        if (posicion != ultimaPos){
-            NodoHeap<T> ultimoNodo = heap.get(ultimaPos);
-            heap.set(posicion, ultimoNodo); // el ultimo ocupa su lugar
-            ultimoNodo.setPosicion(posicion);
-        }
-        heap.remove(ultimaPos);
-        nodoAEliminar.setPosicion(-1); // ya no tiene una posicion valida
-        nodoAEliminar.valor().setHandleEnHeap(null);
-        if (posicion < heap.size()){ // si no era el ultimo, lo reacomodo
-            siftUp(posicion);
-            siftDown(posicion);
+        if (posicion != -1){
+            if (posicion != ultimaPos){
+                NodoHeap ultimoNodo = heap.get(ultimaPos);
+                heap.set(posicion, ultimoNodo); // el ultimo ocupa su lugar
+                ultimoNodo.setPosicion(posicion);
+            }
+            heap.remove(ultimaPos);
+            nodoDelHeap.setPosicion(-1); // ya no tiene una posicion valida
+            if (posicion < heap.size()){ // si no era el ultimo, lo reacomodo
+                siftUp(posicion);
+                siftDown(posicion);
+            }
+        } else {
+            throw new UnsupportedOperationException("El handle ya fue eliminado");
         }
     }
 
@@ -168,7 +197,7 @@ public class Heap<T> {
 
     int indiceMayorDeLosHijos(int i){ // -1 si no tiene hijos
         if (hayHijoDer(i) && hayHijoIzq(i)){
-            if (heap.get(indiceHijoIzq(i)).valor().millasDisponibles() >= heap.get(indiceHijoDer(i)).valor().millasDisponibles()){
+            if (comparador.compare(heap.get(indiceHijoIzq(i)).valor(), heap.get(indiceHijoDer(i)).valor()) >= 0){
                 return indiceHijoIzq(i);
             } else{
                 return indiceHijoDer(i);
