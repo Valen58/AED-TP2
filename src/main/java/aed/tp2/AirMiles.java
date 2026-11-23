@@ -162,7 +162,8 @@ public class AirMiles implements SistemaAirMiles {
         } // O(N log U)
 
         while (j < cantidad){ // los vuelvo a meter, tambien O(N log U)
-            maxHeap.agregarNodo(sacados[j]);
+            Handle<Usuario> nuevoHandle = maxHeap.agregarNodo(sacados[j]); //lo agrego al heap y lo meto ademas en una variable para setear el handle
+            sacados[j].setHandleEnHeap(nuevoHandle);
 
             j++;
         }
