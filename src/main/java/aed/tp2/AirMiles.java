@@ -199,23 +199,23 @@ public class AirMiles implements SistemaAirMiles {
     }
 
     public int[][] paresTransferidoresExclusivos() {
-        RegistroActividad[] registrosOrdenadosPorId = new RegistroActividad[actividadPorUsuario.cantidad()];
-        actividadPorUsuario.guardarValoresEnOrden(registrosOrdenadosPorId); // O(U)
+        Usuario[] usuariosOrdenadosPorId = new Usuario[usuarios.cantidad()]; //antes tenia tipo registroActividad, pero como ya no existe ahora es solo un arreglo de usuarios
+        usuarios.guardarValoresEnOrden(usuariosOrdenadosPorId);
 
         int cantidadDePares = 0; // primero cuento los pares para dimensionar el arreglo
-        for (int i = 0; i < registrosOrdenadosPorId.length; i++){
-            if (esElDeIdMasChicoDeUnParExclusivo(registrosOrdenadosPorId[i])){
+        for (int i = 0; i < usuariosOrdenadosPorId.length; i++){
+            if (esElDeIdMasChicoDeUnParExclusivo(usuariosOrdenadosPorId[i])){
                 cantidadDePares++;
             }
         }
 
         int[][] paresExclusivos = new int[cantidadDePares][2];
         int posicionDelProximoPar = 0; // y despues los guardo
-        for (int i = 0; i < registrosOrdenadosPorId.length; i++){
-            RegistroActividad registro = registrosOrdenadosPorId[i];
-            if (esElDeIdMasChicoDeUnParExclusivo(registro)){
-                paresExclusivos[posicionDelProximoPar][0] = registro.obtenerId();
-                paresExclusivos[posicionDelProximoPar][1] = registro.obtenerContraparte().obtenerId();
+        for (int i = 0; i < usuariosOrdenadosPorId.length; i++){
+            Usuario us = usuariosOrdenadosPorId[i];
+            if (esElDeIdMasChicoDeUnParExclusivo(us)){
+                paresExclusivos[posicionDelProximoPar][0] = us.obtenerId();
+                paresExclusivos[posicionDelProximoPar][1] = us.obtenerContraparte().obtenerId();
                 posicionDelProximoPar++;
             }
         }
@@ -223,13 +223,13 @@ public class AirMiles implements SistemaAirMiles {
         return paresExclusivos;
     }
 
-    private boolean esElDeIdMasChicoDeUnParExclusivo(RegistroActividad registro){ // asi cada par se cuenta una sola vez
+    private boolean esElDeIdMasChicoDeUnParExclusivo(Usuario us){ // asi cada par se cuenta una sola vez
         boolean esParExclusivo = false;
-        RegistroActividad contraparte = registro.obtenerContraparte();
+        Usuario contraparte = us.obtenerContraparte();
 
-        if (contraparte != null && !registro.transfirioConVariosUsuarios() && !contraparte.transfirioConVariosUsuarios()){
-            boolean laContraparteLoTieneComoContraparte = contraparte.obtenerContraparte() == registro; // se eligen entre los dos
-            esParExclusivo = laContraparteLoTieneComoContraparte && registro.obtenerId() < contraparte.obtenerId();
+        if (contraparte != null && !us.transfirioConVariosUsuarios() && !contraparte.transfirioConVariosUsuarios()){
+            boolean laContraparteLoTieneComoContraparte = contraparte.obtenerContraparte() == us; // se eligen entre los dos
+            esParExclusivo = laContraparteLoTieneComoContraparte && us.obtenerId() < contraparte.obtenerId();
         }
 
         return esParExclusivo;
@@ -241,31 +241,29 @@ public class AirMiles implements SistemaAirMiles {
         }
     }
 
-    private RegistroActividad registroDelUsuario(int idUsuario){ // si no tiene registro lo crea
-        RegistroActividad registro = actividadPorUsuario.obtener(idUsuario);
-        if (registro == null){
-            registro = new RegistroActividad(idUsuario);
-            actividadPorUsuario.agregar(idUsuario, registro);
-        }
-        return registro;
-    }
-
-    public void registrarGasto(Usuario usuario, double millasGastadas){ // suma al registro y mira si es el nuevo mas canjeador
+    //private RegistroActividad registroDelUsuario(int idUsuario){ // si no tiene registro lo crea
+      //  RegistroActividad registro = actividadPorUsuario.obtener(idUsuario);
+      //  if (registro == null){
+        //    registro = new RegistroActividad(idUsuario);
+        //    actividadPorUsuario.agregar(idUsuario, registro);
+      //  }
+    //    return registro;
+ //   }
+//creo que este metodo ya no sirve porque lo que hace es solo una inicializacion perezosa de registroActividad (como un constructor ponele), cosa que ya no existe
+    
+public void registrarGasto(Usuario usuario, double millasGastadas){ // suma al registro y mira si es el nuevo mas canjeador
         if (usuario != null && millasGastadas > 0){
-            RegistroActividad registro = registroDelUsuario(usuario.obtenerId());
-            registro.sumarMillasGastadas(millasGastadas);
-            if (elMasCanjeador == null || registro.obtenerMillasGastadas() > elMasCanjeador.obtenerMillasGastadas()){
-                elMasCanjeador = registro;
+            usuario.sumarMillasGastadas(millasGastadas);
+            if (elMasCanjeador == null || usuario.obtenerMillasGastadas() > elMasCanjeador.obtenerMillasGastadas()){
+                elMasCanjeador = usuario;
             }
         }
     }
 
     public void registrarTransferenciaEntre(Usuario origen, Usuario destino){ // la anota en los dos
         if (origen != null && destino != null){
-            RegistroActividad registroDelOrigen = registroDelUsuario(origen.obtenerId());
-            RegistroActividad registroDelDestino = registroDelUsuario(destino.obtenerId());
-            registroDelOrigen.registrarTransferenciaCon(registroDelDestino);
-            registroDelDestino.registrarTransferenciaCon(registroDelOrigen);
+            origen.registrarTransferenciaCon(destino);
+            destino.registrarTransferenciaCon(origen);
         }
     }
 }
