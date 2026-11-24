@@ -535,4 +535,87 @@ public class AirMilesTests {
             visto[par[0]] = visto[par[1]] = true;
         }
     }
+
+    @Test
+    void transferirDesdeUsuarioInexistente(){
+        am.registrarUsuario(2);
+        assertThrows(UnsupportedOperationException.class, () -> am.transferirMillas(1, 2, 50));
+    }
+
+    @Test
+    void transferirHaciaUsuarioInexistente(){
+        am.registrarUsuario(1);
+        am.acumularMillas(1, 100, "");
+        assertThrows(UnsupportedOperationException.class, () -> am.transferirMillas(1, 2, 50));
+        assertEquals(100.0, am.consultarSaldo(1));
+    }
+
+
+    @Test
+    void transferirseAUnoMismo(){
+        am.registrarUsuario(1);
+        am.acumularMillas(1, 100, "");
+        assertThrows(UnsupportedOperationException.class, () -> am.transferirMillas(1, 1, 50));
+        assertEquals(100.0, am.consultarSaldo(1));
+    }
+
+    @Test
+    void transferirMasMillasDeLasDisponibles(){
+        am.registrarUsuario(1);
+        am.registrarUsuario(2);
+        am.acumularMillas(1, 100, "");
+        assertThrows(UnsupportedOperationException.class, () -> am.transferirMillas(1, 2, 150));
+        assertEquals(100.0, am.consultarSaldo(1));
+        assertEquals(0.0, am.consultarSaldo(2));
+    }
+
+    @Test
+    void transferenciaActualizaElMasCanjeador(){
+        am.registrarUsuario(1);
+        am.registrarUsuario(2);
+        am.registrarUsuario(3);
+        am.acumularMillas(1, 500, "");
+        am.acumularMillas(2, 500, "");
+        am.transferirMillas(1, 2, 100);
+        assertEquals(1, am.elMasCanjeador());
+        am.transferirMillas(2, 3, 200);
+        assertEquals(2, am.elMasCanjeador());
+        assertEquals(1, am.elMasAcumulador());
+    }
+
+    @Test 
+    void transferenciasRepetidasMantienenParExclusivo(){
+        am.registrarUsuario(1);
+        am.registrarUsuario(2);
+        am.acumularMillas(1, 500, "");
+        am.transferirMillas(1, 2, 100);
+        am.transferirMillas(1, 2, 100);
+        am.transferirMillas(2, 1, 50);
+        int[][] pares = am.paresTransferidoresExclusivos();
+        assertEquals(1, pares.length);
+        assertEquals(1, Math.min(pares[0][0], pares [0][1]));
+        assertEquals(2, Math.max(pares[0][0], pares[0][1]));
+    }
+
+    @Test
+    void finPromocion(){
+        am.registrarUsuario(1);
+        am.iniciarPromocion("Promo", 3.0);
+        am.acumularMillas(1,100, "Promo");
+        assertEquals(300.0, am.consultarSaldo(1));
+        am.finalizarPromocion("Promo");
+        am.acumularMillas(1, 100, "Promo");
+        assertEquals(400.0, am.consultarSaldo(1));
+    }
+
+    @Test 
+    void rankingCero(){
+        am.registrarUsuario(1);
+        am.acumularMillas(1, 100, "");
+        int[] ranking = am.rankingMillas(0);
+        assertNotNull(ranking);
+        assertEquals(0, ranking.length);
+        assertEquals(100.0, am.consultarSaldo(1));
+    }
+
 }
