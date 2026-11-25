@@ -24,7 +24,7 @@ public class TestsDiccionarioABB {
 
     @Test
     public void testInsertarRaizYObtener(){
-        Usuario usuario = new Usuario(15, 0.0, 0.0, 0.0, 0.0, null, null);
+        Usuario usuario = new Usuario(15, 0.0, 0.0, 0.0, 0.0, null);
         abb.setKey(15, usuario);
 
         assertTrue(abb.pertenece(15));
@@ -35,8 +35,8 @@ public class TestsDiccionarioABB {
 
     @Test
     public void testActualizarValor(){
-        Usuario usuario = new Usuario(20, 100.0, 100.0, 0.0, 0.0, null, null);
-        Usuario usuarioModificado = new Usuario(20, 500.0, 500.0, 0.0, 0.0, null, null);
+        Usuario usuario = new Usuario(20, 100.0, 100.0, 0.0, 0.0, null);
+        Usuario usuarioModificado = new Usuario(20, 500.0, 500.0, 0.0, 0.0, null);
         abb.setKey(20, usuario);
         assertEquals(100.0, abb.obtener(20).millasDisponibles());
 
@@ -51,7 +51,7 @@ public class TestsDiccionarioABB {
         int[] ids = {10, 20, 30, 40, 50}; // todos por la rama derecha
         for (int i = 0; i < ids.length; i++){
             int id = ids[i];
-            abb.setKey(id, new Usuario(id, 0.0, 0.0, 0.0, 0.0, null, null));
+            abb.setKey(id, new Usuario(id, 0.0, 0.0, 0.0, 0.0, null));
         }
 
         for (int i = 0; i < ids.length; i++){ // veo que esten todos
@@ -72,7 +72,7 @@ public class TestsDiccionarioABB {
         int[] ids = {50, 20, 70, 10, 30, 60, 80};
         for (int i = 0; i < ids.length; i++){
             int id = ids[i];
-            abb.setKey(id, new Usuario(id, 0.0, 0.0, 0.0, 0.0, null, null));
+            abb.setKey(id, new Usuario(id, 0.0, 0.0, 0.0, 0.0, null));
         }
         for (int i = 0; i < ids.length; i++){ // chequeo que se inserto todo
             int id = ids[i];
@@ -86,11 +86,11 @@ public class TestsDiccionarioABB {
     }
 
     @Test public void testModificacionesEnHojasYRamas(){
-        abb.setKey(50, new Usuario(50, 10.0, 10.0, 0.0, 0.0, null, null));
-        abb.setKey(20, new Usuario(20, 20.0, 20.0, 0.0, 0.0, null, null));
-        abb.setKey(80, new Usuario(80, 30.0, 30.0, 0.0, 0.0, null, null));
+        abb.setKey(50, new Usuario(50, 10.0, 10.0, 0.0, 0.0, null));
+        abb.setKey(20, new Usuario(20, 20.0, 20.0, 0.0, 0.0, null));
+        abb.setKey(80, new Usuario(80, 30.0, 30.0, 0.0, 0.0, null));
 
-        Usuario nuevoHijoIzquierdo = new Usuario(20, 999.0, 999.0, 0.0, 0.0, null, null); // modifico una hoja
+        Usuario nuevoHijoIzquierdo = new Usuario(20, 999.0, 999.0, 0.0, 0.0, null); // modifico una hoja
         abb.setKey(20, nuevoHijoIzquierdo);
 
         assertEquals(999.0, abb.obtener(20).millasDisponibles());

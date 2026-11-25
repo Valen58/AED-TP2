@@ -1,8 +1,13 @@
 package aed.tp2;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class AirMilesTests {
     private AirMiles am;
@@ -617,5 +622,17 @@ public class AirMilesTests {
         assertEquals(0, ranking.length);
         assertEquals(100.0, am.consultarSaldo(1));
     }
+
+
+    @Test 
+    void registrarConReferidorQueNoExisteYRankingVacio(){
+        assertEquals(0, am.rankingMillas(5).length); //lo que pide es que la longitud del arreglo que devuelve ranking millas sea vacio si no hay nada en el heap
+        
+        am.registrarUsuarioConReferidor(10, 999);
+        assertEquals(0.0, am.consultarSaldo(10));
+        assertEquals(10, am.elMasAcumulador());
+    }
+
+    
 
 }
